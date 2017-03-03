@@ -58,7 +58,7 @@ class RouteMiddleware
         $actionTrigger = str_replace('admin/', '', $this->url);
 
         if(isset($this->adminActions[$actionTrigger])) {
-            $this->adminActions[$actionTrigger];
+            $this->adminActions[$actionTrigger]();
         }
     }
 }

@@ -32,3 +32,11 @@ All this provides a flexible way to place your data files.
 
 If you followed with the code changes and you went to the site you may have noticed the landing page content didn't change.
 This is because the twig cache is on.
+
+This is the moment the cms is beginning to shine. Next to adding a new template, admin/refresh-site, i added a configurable way to add admin actions.
+In the src/AdminAction folder you can now add classes with an `__invoke` method which will get executed by the `excecuteAdmin` method in the `RouteMidelware` class.
+So now you can open a tab with the /admin/refresh-site and refresh the page to see your changes. It takes less time than waiting for the whole site to get build.
+For the more impatient people you can change `'cache' => $projectRoot.'/cache'` to `'cache' => false`. 
+
+Now that we are extending the cms i want to give you an other tip. In the previous commit you saw `$app = new \Slim\App($config);`.
+You can add `'settings' => ['displayErrorDetails' => true,]` to `$config` so you don't have the production error page of the slim framework. 
