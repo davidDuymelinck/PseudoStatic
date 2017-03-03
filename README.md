@@ -11,3 +11,6 @@ The other thing i don't like is that the (meta)data of the page is in the same f
 
 I'm most comfortable with php so i searched for the most lightweight way to have routes and a template engine.
 I found [Slim](https://www.slimframework.com) and it's twig addon.
+
+I used composer to add the depenencies. I created a frontcontroller, public/index.php. And added a twig template file. 
+For the moment all of this you can find in the slim documentation.
