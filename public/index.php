@@ -1,5 +1,7 @@
 <?php
 
+use PseudoStatic\RouteMiddleware;
+
 $projectRoot = dirname(dirname(__FILE__));
 
 require $projectRoot.'/vendor/autoload.php';
@@ -28,6 +30,7 @@ $app->get('/{url:.*}', function (\Slim\Http\Request $request, $response, $args) 
     $url = $request->getAttribute('route')->getArgument('url');
 
     $template = empty($url) ? 'landing/page.html.twig' : $url . '/page.html.twig';
+    $routeMiddleware = new RouteMiddleware($projectRoot, $url);
 
     if (strlen($url) > 0 && file_exists($projectRoot . '/site/' . $template) === FALSE) {
         $request = $request->withAttribute('template', 'error/not-found/page.html.twig');
@@ -35,7 +38,8 @@ $app->get('/{url:.*}', function (\Slim\Http\Request $request, $response, $args) 
     } else {
         $request = $request->withAttribute('template', $template);
 
-        $request = $request->withAttribute('data', []);
+        $data = $routeMiddleware->getYamlData();
+        $request = $request->withAttribute('data', $data);
     }
 
     $response = $next($request, $response);

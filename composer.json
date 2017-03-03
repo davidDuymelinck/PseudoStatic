@@ -12,7 +12,13 @@
     "minimum-stability": "dev",
     "require": {
         "slim/slim": "^3.7",
-        "slim/twig-view": "^2.2"
+        "slim/twig-view": "^2.2",
+        "symfony/yaml": "^3.2"
+    },
+    "autoload": {
+        "psr-4" : {
+            "PseudoStatic\\": "src/"
+        }
     },
     "scripts": {
         "dev": "php -S localhost:8888 -t public public/index.php"
