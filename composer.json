@@ -16,6 +16,9 @@
         "symfony/yaml": "^3.2",
         "league/flysystem": "^1.0"
     },
+    "require-dev": {
+        "symfony/console": "^3.2"
+    },
     "autoload": {
         "psr-4" : {
             "PseudoStatic\\": "src/"
