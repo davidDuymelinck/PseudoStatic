@@ -23,3 +23,12 @@ Inside that function I do three things:
 * When there is a template render it.
 
 At the moment i only fill the `$request` template variable, but you see there is also a data variable.
+
+Now i added a new dependency to our composer file and i told it where to look for our own classes which all start with the namespace PseudoStatic.
+In the `RouterMiddleware` class i added a `getYamlData` method. This method contains an extension of the yaml format.
+I you add `imports:` followed by an array, the method will find the file(s) and adds its data to the data of the yaml file that belongs to the page.
+If there is no `!site` before the filename the file has to be in the page folder. When `!site` is present you have to start the filepath from the site folder.
+All this provides a flexible way to place your data files.
+
+If you followed with the code changes and you went to the site you may have noticed the landing page content didn't change.
+This is because the twig cache is on.
