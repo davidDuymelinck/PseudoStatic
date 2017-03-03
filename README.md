@@ -14,3 +14,12 @@ I found [Slim](https://www.slimframework.com) and it's twig addon.
 
 I used composer to add the depenencies. I created a frontcontroller, public/index.php. And added a twig template file. 
 For the moment all of this you can find in the slim documentation.
+
+This is the moment the cms starts forming. I have added middleware for the url, `->add()`.
+Inside that function I do three things:
+
+* When the url is an empty string render a default template.
+* When the template is not found render a not found template.
+* When there is a template render it.
+
+At the moment i only fill the `$request` template variable, but you see there is also a data variable.
