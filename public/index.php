@@ -22,8 +22,25 @@ $container['view'] = function ($container) use($projectRoot) {
     return $view;
 };
 
-$app->get('/', function (\Slim\Http\Request $request, $response, $args) {
-    return $this->view->render($response, 'landing/page.html.twig', []);
+$app->get('/{url:.*}', function (\Slim\Http\Request $request, $response, $args) {
+    return $this->view->render($response, $request->getAttribute('template'), $request->getAttribute('data'));
+})->add(function (\Slim\Http\Request $request, $response, $next) use ($projectRoot) {
+    $url = $request->getAttribute('route')->getArgument('url');
+
+    $template = empty($url) ? 'landing/page.html.twig' : $url . '/page.html.twig';
+
+    if (strlen($url) > 0 && file_exists($projectRoot . '/site/' . $template) === FALSE) {
+        $request = $request->withAttribute('template', 'error/not-found/page.html.twig');
+        $request = $request->withAttribute('data', []);
+    } else {
+        $request = $request->withAttribute('template', $template);
+
+        $request = $request->withAttribute('data', []);
+    }
+
+    $response = $next($request, $response);
+
+    return $response;
 });
 
 $app->run();
