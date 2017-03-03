@@ -39,4 +39,8 @@ So now you can open a tab with the /admin/refresh-site and refresh the page to s
 For the more impatient people you can change `'cache' => $projectRoot.'/cache'` to `'cache' => false`. 
 
 Now that we are extending the cms i want to give you an other tip. In the previous commit you saw `$app = new \Slim\App($config);`.
-You can add `'settings' => ['displayErrorDetails' => true,]` to `$config` so you don't have the production error page of the slim framework. 
+You can add `'settings' => ['displayErrorDetails' => true,]` to `$config` so you don't have the production error page of the slim framework.
+ 
+For the templates and data files I always use the filenames page.html.twig and data.yaml. 
+After a while you will get tired of typing it over and over. That is why i made a command `php console.php create:page`.
+It will ask for the url and create the page based on that. If you type y with the next question the data file will be created.
