@@ -1,0 +1,20 @@
+{
+    "name": "dlinc/pseudo-static",
+    "description": "A file based cms",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "davidDuymelinck",
+            "email": "dlinck.d+github@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "slim/slim": "^3.7",
+        "slim/twig-view": "^2.2"
+    },
+    "scripts": {
+        "dev": "php -S localhost:8888 -t public public/index.php"
+    }
+}
