@@ -50,3 +50,6 @@ The problem with the php build in server is that there is a bug with urls contai
 In the .htaccess file i excluded javascript, css and a few image file types. All other file types like json, xml can be rendered by a template.
 
 Because I was working with different file types I realised the page. prefix was not needed because all templates in the site subfolders are pages because they are connected with an url.
+
+The next thing i needed to improve was taking advantage of the twig template engine. 
+I did this by adding a layout folder and twig needed to be made aware of it.
