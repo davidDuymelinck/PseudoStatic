@@ -44,3 +44,7 @@ You can add `'settings' => ['displayErrorDetails' => true,]` to `$config` so you
 For the templates and data files I always use the filenames page.html.twig and data.yaml. 
 After a while you will get tired of typing it over and over. That is why i made a command `php console.php create:page`.
 It will ask for the url and create the page based on that. If you type y with the next question the data file will be created.
+
+Until now I was focused on displaying data and markup, but sites display other files too like images, javascript files and so on.
+The problem with the php build in server is that there is a bug with urls containing a point character. So i got an apache server running.
+In the .htaccess file i excluded javascript, css and a few image file types. All other file types like json, xml can be rendered by a template.
