@@ -48,3 +48,5 @@ It will ask for the url and create the page based on that. If you type y with th
 Until now I was focused on displaying data and markup, but sites display other files too like images, javascript files and so on.
 The problem with the php build in server is that there is a bug with urls containing a point character. So i got an apache server running.
 In the .htaccess file i excluded javascript, css and a few image file types. All other file types like json, xml can be rendered by a template.
+
+Because I was working with different file types I realised the page. prefix was not needed because all templates in the site subfolders are pages because they are connected with an url.
