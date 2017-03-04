@@ -8,6 +8,9 @@ $projectRoot = dirname(dirname(__FILE__));
 require $projectRoot.'/vendor/autoload.php';
 
 $config = [
+    'settings' => [
+        'displayErrorDetails' => true,
+    ],
     'adminActions' => [
         'refresh-site' => new RefreshSite($projectRoot),
     ]
@@ -21,8 +24,10 @@ $container = $app->getContainer();
 // Register component on container
 $container['view'] = function ($container) use($projectRoot) {
     $view = new \Slim\Views\Twig($projectRoot.'/site', [
-        'cache' => $projectRoot.'/cache'
+        'cache' => false
     ]);
+
+    $view->getLoader()->addPath($projectRoot.'/layout', 'layout');
 
     // Instantiate and add Slim specific extension
     $urlBasePath = rtrim(str_ireplace('index.php', '', $container['request']->getUri()->getBasePath()), '/');
