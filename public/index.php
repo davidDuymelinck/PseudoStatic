@@ -35,18 +35,18 @@ $app->get('/{url:.*}', function (\Slim\Http\Request $request, $response, $args) 
     return $this->view->render($response, $request->getAttribute('template'), $request->getAttribute('data'));
 })->add(function (\Slim\Http\Request $request, $response, $next) use ($projectRoot, $container) {
     $url = $request->getAttribute('route')->getArgument('url');
-    $fileContent = '.html';
+    $fileContent = 'html';
 
-    if(preg_match('/\.[a-z]+$/', $url, $matches) && !empty($matches) && $matches[0] != $fileContent) {
-        $fileContent = $matches[0];
+    if(preg_match('/\.([a-z]+)$/', $url, $matches) && !empty($matches) && $matches[1] != $fileContent) {
+        $fileContent = $matches[1];
     }
 
-    $template = empty($url) ? 'landing/page.html.twig' : $url . '/page'.$fileContent.'.twig';
+    $template = empty($url) ? 'landing/html.twig' : $url . '/'.$fileContent.'.twig';
     $routeMiddleware = new RouteMiddleware($projectRoot, $url);
     $routeMiddleware->addAdminActions($container->get('adminActions'));
 
     if (strlen($url) > 0 && file_exists($projectRoot . '/site/' . $template) === FALSE) {
-        $request = $request->withAttribute('template', 'error/not-found/page.html.twig');
+        $request = $request->withAttribute('template', 'error/not-found/html.twig');
         $request = $request->withAttribute('data', []);
     } else {
         if(strlen($url) > 0 && strpos($url, 'admin') !== FALSE) {

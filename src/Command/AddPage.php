@@ -44,7 +44,7 @@ class AddPage extends Command
 
         $url = $helper->ask($input, $output, $question);
 
-        $filesystem->write($url.'/page.html.twig', '');
+        $filesystem->write($url.'/html.twig', '');
 
         $question = new ConfirmationQuestion('Do you want a data file for the page? [N/y] ', false);
 
