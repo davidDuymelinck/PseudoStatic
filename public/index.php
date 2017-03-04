@@ -35,8 +35,13 @@ $app->get('/{url:.*}', function (\Slim\Http\Request $request, $response, $args) 
     return $this->view->render($response, $request->getAttribute('template'), $request->getAttribute('data'));
 })->add(function (\Slim\Http\Request $request, $response, $next) use ($projectRoot, $container) {
     $url = $request->getAttribute('route')->getArgument('url');
+    $fileContent = '.html';
 
-    $template = empty($url) ? 'landing/page.html.twig' : $url . '/page.html.twig';
+    if(preg_match('/\.[a-z]+$/', $url, $matches) && !empty($matches) && $matches[0] != $fileContent) {
+        $fileContent = $matches[0];
+    }
+
+    $template = empty($url) ? 'landing/page.html.twig' : $url . '/page'.$fileContent.'.twig';
     $routeMiddleware = new RouteMiddleware($projectRoot, $url);
     $routeMiddleware->addAdminActions($container->get('adminActions'));
 
