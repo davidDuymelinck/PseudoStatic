@@ -53,3 +53,11 @@ Because I was working with different file types I realised the page. prefix was 
 
 The next thing i needed to improve was taking advantage of the twig template engine. 
 I did this by adding a layout folder and twig needed to be made aware of it.
+
+I have made an error with the other output format template urls. 
+In the example of other/page.json the slim middleware picks it up. 
+So it would never go to the right template. The solution is to remove the file extension from the url.
+ 
+To make the site work on html only servers I added a `php console.php build:site` command. 
+This puts all static assets in the public directory and all non php related templates in the distr folder.
+Because I didn't want to touch the urls in the templates the command will create index.html files.
