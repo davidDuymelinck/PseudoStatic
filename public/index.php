@@ -46,6 +46,10 @@ $app->get('/{url:.*}', function (\Slim\Http\Request $request, $response, $args) 
         $fileContent = $matches[1];
     }
 
+    if(strlen($url) > 0) {
+        $url = str_replace('.'.$fileContent, '', $url);
+    }
+
     $template = empty($url) ? 'landing/html.twig' : $url . '/'.$fileContent.'.twig';
     $routeMiddleware = new RouteMiddleware($projectRoot, $url);
     $routeMiddleware->addAdminActions($container->get('adminActions'));
