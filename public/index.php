@@ -2,6 +2,8 @@
 
 use PseudoStatic\AdminAction\RefreshSite;
 use PseudoStatic\RouteMiddleware;
+use Aptoma\Twig\Extension\MarkdownEngine;
+use Aptoma\Twig\Extension\MarkdownExtension;
 
 $projectRoot = dirname(dirname(__FILE__));
 
@@ -32,6 +34,9 @@ $container['view'] = function ($container) use($projectRoot) {
     // Instantiate and add Slim specific extension
     $urlBasePath = rtrim(str_ireplace('index.php', '', $container['request']->getUri()->getBasePath()), '/');
     $view->addExtension(new Slim\Views\TwigExtension($container['router'], $urlBasePath));
+
+    $engine = new MarkdownEngine\MichelfMarkdownEngine();
+    $view->addExtension(new MarkdownExtension($engine));
 
     return $view;
 };
