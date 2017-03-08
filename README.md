@@ -61,3 +61,6 @@ So it would never go to the right template. The solution is to remove the file e
 To make the site work on html only servers I added a `php console.php build:site` command. 
 This puts all static assets in the public directory and all non php related templates in the distr folder.
 Because I didn't want to touch the urls in the templates the command will create index.html files.
+
+One of the features of other static site software is using the markdown formating. I added it as a twig extension.
+  
