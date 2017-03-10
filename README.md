@@ -64,3 +64,5 @@ Because I didn't want to touch the urls in the templates the command will create
 
 One of the features of other static site software is using the markdown formating. I added it as a twig extension.
   
+The build:site command was not aware of the markdown formating. 
+And following my keep data manipulation out the loop initiative, i replaced the file check with a `CallbackFilterIterator`.   
