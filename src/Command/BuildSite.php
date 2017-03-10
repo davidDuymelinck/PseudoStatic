@@ -9,9 +9,10 @@ use PseudoStatic\YamlHelper;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Yaml\Yaml;
 use Twig_Environment;
 use Twig_Loader_Filesystem;
+use Aptoma\Twig\Extension\MarkdownEngine;
+use Aptoma\Twig\Extension\MarkdownExtension;
 
 class BuildSite extends Command
 {
@@ -52,17 +53,21 @@ class BuildSite extends Command
 
         $siteRoot = $this->projectRoot.'/site';
         $siteFiles = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($siteRoot));
+        $templateFiles = new \CallbackFilterIterator($siteFiles, function ($current, $key, $file) {
+            $pathName = $file->getPathname();
+
+            return strpos($pathName, 'admin') === FALSE &&
+                strpos($pathName, 'error') === FALSE &&
+                strpos($pathName, '.yaml') === FALSE &&
+                !$file->isDot();
+        });
         $loader = new Twig_Loader_Filesystem($siteRoot);
         $loader->addPath($this->projectRoot.'/layout', 'layout');
         $twig = new Twig_Environment($loader);
+        $engine = new MarkdownEngine\MichelfMarkdownEngine();
+        $twig->addExtension(new MarkdownExtension($engine));
 
-        foreach ($siteFiles as $file) {
-            // there are no admin functions or error catching on a static site
-            if(strpos($file->getPathname(), 'admin') !== FALSE || strpos($file->getPathname(), 'error') !== FALSE ||
-                strpos($file->getPathname(), '.yaml') !== FALSE || in_array($file->getFilename(), ['.', '..'])) {
-                continue;
-            }
-
+        foreach ($templateFiles as $file) {
             $template = str_replace($siteRoot.DIRECTORY_SEPARATOR, '', $file->getPathName());
             $filePath = str_replace($file->getFilename(), '', $file->getPathname());
             $data = (new YamlHelper($this->projectRoot))->getArrayFromDir($filePath);
