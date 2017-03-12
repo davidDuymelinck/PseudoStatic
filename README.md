@@ -66,3 +66,10 @@ One of the features of other static site software is using the markdown formatin
   
 The build:site command was not aware of the markdown formating. 
 And following my keep data manipulation out the loop initiative, i replaced the file check with a `CallbackFilterIterator`.   
+
+Strange that I made a create:page command before i made an admin/create-page url. 
+The url has the benefit of adding content to the page on creation.
+I did a whole bunch of changes. The most notable in the index.php file is that the route functions are all classes now.
+This makes the code more readable because the lines in the files are shorter.
+The other change I made is adding an authenication library to the Slim app. Now that there is a create-page form you don't want everyone to add pages.
+Because there is no database to store the users I added the dotenv library to keep the username and password out of the repository.
