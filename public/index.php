@@ -1,13 +1,19 @@
 <?php
 
+use PseudoStatic\AdminAction\AddPage;
 use PseudoStatic\AdminAction\RefreshSite;
-use PseudoStatic\RouteMiddleware;
 use Aptoma\Twig\Extension\MarkdownEngine;
 use Aptoma\Twig\Extension\MarkdownExtension;
+use PseudoStatic\Middleware\AllGetRoutes;
+use PseudoStatic\RouteHandler\CreatePage;
+use PseudoStatic\RouteHandler\Get;
+use Slim\Middleware\HttpBasicAuthentication;
 
 $projectRoot = dirname(dirname(__FILE__));
 
 require $projectRoot.'/vendor/autoload.php';
+
+(new Dotenv\Dotenv($projectRoot))->load();
 
 $config = [
     'settings' => [
@@ -15,6 +21,7 @@ $config = [
     ],
     'adminActions' => [
         'refresh-site' => new RefreshSite($projectRoot),
+        'create-page' => new AddPage(),
     ]
 ];
 
@@ -23,7 +30,6 @@ $app = new \Slim\App($config);
 // Get container
 $container = $app->getContainer();
 
-// Register component on container
 $container['view'] = function ($container) use($projectRoot) {
     $view = new \Slim\Views\Twig($projectRoot.'/site', [
         'cache' => false
@@ -41,41 +47,17 @@ $container['view'] = function ($container) use($projectRoot) {
     return $view;
 };
 
-$app->get('/{url:.*}', function (\Slim\Http\Request $request, $response, $args) {
-    return $this->view->render($response, $request->getAttribute('template'), $request->getAttribute('data'));
-})->add(function (\Slim\Http\Request $request, $response, $next) use ($projectRoot, $container) {
-    $url = $request->getAttribute('route')->getArgument('url');
-    $fileContent = 'html';
+$app->add(new HttpBasicAuthentication([
+    "path" => "/admin",
+    "secure" => true,
+    "relaxed" => ["localhost", "pseudostatic.local"],
+    "users" => [
+        getenv('ADMIN_USER') => getenv('ADMIN_PASS'),
+    ]
+]));
 
-    if(preg_match('/\.([a-z]+)$/', $url, $matches) && !empty($matches) && $matches[1] != $fileContent) {
-        $fileContent = $matches[1];
-    }
+$app->get('/{url:.*}', new Get($container))->add(new AllGetRoutes($container, $projectRoot));
 
-    if(strlen($url) > 0) {
-        $url = str_replace('.'.$fileContent, '', $url);
-    }
-
-    $template = empty($url) ? 'landing/html.twig' : $url . '/'.$fileContent.'.twig';
-    $routeMiddleware = new RouteMiddleware($projectRoot, $url);
-    $routeMiddleware->addAdminActions($container->get('adminActions'));
-
-    if (strlen($url) > 0 && file_exists($projectRoot . '/site/' . $template) === FALSE) {
-        $request = $request->withAttribute('template', 'error/not-found/html.twig');
-        $request = $request->withAttribute('data', []);
-    } else {
-        if(strlen($url) > 0 && strpos($url, 'admin') !== FALSE) {
-            $routeMiddleware->executeAdmin();
-        }
-
-        $request = $request->withAttribute('template', $template);
-
-        $data = $routeMiddleware->getYamlData();
-        $request = $request->withAttribute('data', $data);
-    }
-
-    $response = $next($request, $response);
-
-    return $response;
-});
+$app->post('/admin/create-page', new CreatePage($container, $projectRoot));
 
 $app->run();

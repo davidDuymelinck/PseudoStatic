@@ -16,7 +16,9 @@
         "symfony/yaml": "^3.2",
         "league/flysystem": "^1.0",
         "aptoma/twig-markdown": "~2.0",
-        "michelf/php-markdown": "^1.7"
+        "michelf/php-markdown": "^1.7",
+        "tuupola/slim-basic-auth": "^2.2",
+        "vlucas/phpdotenv": "^2.4"
     },
     "require-dev": {
         "symfony/console": "^3.2"

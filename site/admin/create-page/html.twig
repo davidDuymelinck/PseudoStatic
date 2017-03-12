@@ -1,0 +1,18 @@
+{% extends '@layout/base.html.twig' %}
+{% block title %}Create page{% endblock %}
+{% block body %}
+    {% if created is defined %}
+        <p style="background: green">The page was created</p>
+    {% endif %}
+    {% if error is defined %}
+        <p style="background: red">{{ error }}</p>
+    {% endif %}
+    <form method="post" action="">
+        <p><label for="url">Url</label> <input type="text" name="url" id="url"></p>
+        <p><label for="title">Title</label> <input type="text" name="title" id="title"></p>
+        <p><label for="body">Body</label>
+            <textarea name="body" id="body" cols="30" rows="10"></textarea>
+        </p>
+        <button type="submit">Create page</button>
+    </form>
+{% endblock %}
