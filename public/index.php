@@ -16,14 +16,17 @@ require $projectRoot.'/vendor/autoload.php';
 (new Dotenv\Dotenv($projectRoot))->load();
 
 $config = [
-    'settings' => [
-        'displayErrorDetails' => true,
-    ],
     'adminActions' => [
         'refresh-site' => new RefreshSite($projectRoot),
         'create-page' => new AddPage(),
     ]
 ];
+
+if(getenv('DEVELOPING') === 'YES') {
+    $config['settings'] = [
+        'displayErrorDetails' => true,
+    ];
+}
 
 $app = new \Slim\App($config);
 
@@ -31,11 +34,12 @@ $app = new \Slim\App($config);
 $container = $app->getContainer();
 
 $container['view'] = function ($container) use($projectRoot) {
+
     $view = new \Slim\Views\Twig($projectRoot.'/site', [
-        'cache' => false
+        'cache' => getenv('DEVELOPING') === 'YES' ? false : $projectRoot.'/cache'
     ]);
 
-    $view->getLoader()->addPath($projectRoot.'/layout', 'layout');
+    $view->getLoader()->addPath($projectRoot.'/templates/layout', 'layout');
 
     // Instantiate and add Slim specific extension
     $urlBasePath = rtrim(str_ireplace('index.php', '', $container['request']->getUri()->getBasePath()), '/');

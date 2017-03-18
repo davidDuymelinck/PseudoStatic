@@ -1,75 +1,73 @@
-This is a tutorial in commits how tor create a static file cms.
+#PseudoStatic
 
-# Why i did this
+This is a php powered static file CMS.
 
-I have looked at quite a few static site creators and i didn't like the build process. 
-I want to see what i'm doing when i work on the content. Not create all the files, check the output, change, over and over again.
- 
-The other thing i don't like is that the (meta)data of the page is in the same file as markup.
- 
-# How did i start?
+You can use it on a server with php, which gives you:
 
-I'm most comfortable with php so i searched for the most lightweight way to have routes and a template engine.
-I found [Slim](https://www.slimframework.com) and it's twig addon.
+* administration of the site
+* not found url handling
 
-I used composer to add the depenencies. I created a frontcontroller, public/index.php. And added a twig template file. 
-For the moment all of this you can find in the slim documentation.
+Or you can use it as a static site generator.
 
-This is the moment the cms starts forming. I have added middleware for the url, `->add()`.
-Inside that function I do three things:
+##Requirements
 
-* When the url is an empty string render a default template.
-* When the template is not found render a not found template.
-* When there is a template render it.
+* php 5.6+
+* [composer](https://getcomposer.org/)
 
-At the moment i only fill the `$request` template variable, but you see there is also a data variable.
+##Installation
 
-Now i added a new dependency to our composer file and i told it where to look for our own classes which all start with the namespace PseudoStatic.
-In the `RouterMiddleware` class i added a `getYamlData` method. This method contains an extension of the yaml format.
-I you add `imports:` followed by an array, the method will find the file(s) and adds its data to the data of the yaml file that belongs to the page.
-If there is no `!site` before the filename the file has to be in the page folder. When `!site` is present you have to start the filepath from the site folder.
-All this provides a flexible way to place your data files.
+* clone the project
+* run `composer install`
+* create a .env file in the root of you project with the variables ADMIN_USER, ADMIN_PASS. The variable DEVELOPING can have two value, YES and NO
+* create pages
 
-If you followed with the code changes and you went to the site you may have noticed the landing page content didn't change.
-This is because the twig cache is on.
+##How it works
 
-This is the moment the cms is beginning to shine. Next to adding a new template, admin/refresh-site, i added a configurable way to add admin actions.
-In the src/AdminAction folder you can now add classes with an `__invoke` method which will get executed by the `excecuteAdmin` method in the `RouteMidelware` class.
-So now you can open a tab with the /admin/refresh-site and refresh the page to see your changes. It takes less time than waiting for the whole site to get build.
-For the more impatient people you can change `'cache' => $projectRoot.'/cache'` to `'cache' => false`. 
+For the pages you have to create a html.twig file in a site subfolder.
 
-Now that we are extending the cms i want to give you an other tip. In the previous commit you saw `$app = new \Slim\App($config);`.
-You can add `'settings' => ['displayErrorDetails' => true,]` to `$config` so you don't have the production error page of the slim framework.
- 
-For the templates and data files I always use the filenames page.html.twig and data.yaml. 
-After a while you will get tired of typing it over and over. That is why i made a command `php console.php create:page`.
-It will ask for the url and create the page based on that. If you type y with the next question the data file will be created.
+If you want to add data to the twig file you have to add a data.[yaml](http://lzone.de/cheat-sheet/YAML) file in the same folder.
+The data.yaml file can get data from other yaml files if you add a file sequence in the imports section.
+If you add `!site` in front of the filename you can get yaml files from all subfolders of site. If you don't the yaml file needs to be in the same folder als the data.yaml.
 
-Until now I was focused on displaying data and markup, but sites display other files too like images, javascript files and so on.
-The problem with the php build in server is that there is a bug with urls containing a point character. So i got an apache server running.
-In the .htaccess file i excluded javascript, css and a few image file types. All other file types like json, xml can be rendered by a template.
+In case you need other output than html, create a X.twig file where X will be the extension added tot the end of the url.
+For example test/json.twig can be reached by the test.json url.
 
-Because I was working with different file types I realised the page. prefix was not needed because all templates in the site subfolders are pages because they are connected with an url.
+##Special pages
 
-The next thing i needed to improve was taking advantage of the twig template engine. 
-I did this by adding a layout folder and twig needed to be made aware of it.
+* site/landing: the homepage of the site
+* subfolders of site/admin: administration pages
+* site/error/not-found: url not found page 
 
-I have made an error with the other output format template urls. 
-In the example of other/page.json the slim middleware picks it up. 
-So it would never go to the right template. The solution is to remove the file extension from the url.
- 
-To make the site work on html only servers I added a `php console.php build:site` command. 
-This puts all static assets in the public directory and all non php related templates in the distr folder.
-Because I didn't want to touch the urls in the templates the command will create index.html files.
+##Administration
+There are a few administration urls:
 
-One of the features of other static site software is using the markdown formating. I added it as a twig extension.
-  
-The build:site command was not aware of the markdown formating. 
-And following my keep data manipulation out the loop initiative, i replaced the file check with a `CallbackFilterIterator`.   
+* admin/refresh-site: when the DEVELOPING is set to NO the twig files are cached. To see the changes you can use this url
+* admin/create-page: the form will create a html.twig file for you
 
-Strange that I made a create:page command before i made an admin/create-page url. 
-The url has the benefit of adding content to the page on creation.
-I did a whole bunch of changes. The most notable in the index.php file is that the route functions are all classes now.
-This makes the code more readable because the lines in the files are shorter.
-The other change I made is adding an authenication library to the Slim app. Now that there is a create-page form you don't want everyone to add pages.
-Because there is no database to store the users I added the dotenv library to keep the username and password out of the repository.
+##Terminal commands
+All commands start with `php console.php` and have a space after console.php.
+
+* `create:page`: asks you a few questions to create a page with an optional data file
+* `build:site`: creates a static site in the distr folder
+
+##Extend the CMS
+PseudoStatic is build with [Slim](https://www.slimframework.com), [Twig](http://twig.sensiolabs.org) and [Symfony console](http://symfony.com/doc/current/components/console.html).
+Read their documentation if you don't know how to start. Check the code of the CMS to see working examples.
+
+###An administration page with an action which requires no user interaction
+
+* create a page in a subfolder of site/admin
+* create a php class in src/AdminAction folder
+* instantiate the class in the `$config['adminActions']` array found in the public/index.php file
+
+###An administration page with user interaction
+
+* create a page in a subfolder of site/admin
+* create a php class in the src/RouteHandler folder
+* if the page needs data from the RouteHandler class create a php class in src/AdminAction folder
+* add an `$app->post()` route in the public/index.php file
+
+###Add a command
+
+* create a php class in the src/Command folder
+* add an `$application->add()` in the console.php file

@@ -34,7 +34,7 @@ final class CreatePage
             } else {
                 $message['created'] = 'yes';
 
-                $templateContent = $filesystem->read('/layout/create-page.html.twig');
+                $templateContent = $filesystem->read('/templates/blueprints/create-page.html.twig');
                 $templateContent = str_replace(['§title§', '§body§'], [$formData['title'], $formData['body']], $templateContent);
 
                 $filesystem->write($newPath, $templateContent);
