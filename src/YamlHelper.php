@@ -22,13 +22,13 @@ class YamlHelper
 
             if(isset($yamlData['imports'])) {
                 foreach($yamlData['imports'] as $importFile) {
-                    $importFile = $dir.$file;
+                    $importFile = $dir.$importFile;
 
-                    if(strpos($file, '!site') !== FALSE) {
-                        $importFile = str_replace('!site', $this->projectRoot.'/site', $file);
+                    if(strpos($importFile, '!site') !== FALSE) {
+                        $importFile = str_replace('!site', $this->projectRoot.'/site', $importFile);
                     }
 
-                    $yamlData += Yaml::parse(file_get_contents($importFile));
+                    $yamlData = array_merge_recursive($yamlData, Yaml::parse(file_get_contents($importFile)));
                 }
 
                 unset($yamlData['imports']);

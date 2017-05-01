@@ -6,6 +6,7 @@ namespace PseudoStatic\RouteHandler;
 use Interop\Container\ContainerInterface;
 use League\Flysystem\Adapter\Local;
 use League\Flysystem\Filesystem;
+use PseudoStatic\ValueObject\PageFields;
 
 final class CreatePage
 {
@@ -13,31 +14,43 @@ final class CreatePage
 
     private $projectRoot;
 
+    private $fileSystem;
+
     public function __construct(ContainerInterface $container, $projectRoot) {
         $this->container = $container;
         $this->projectRoot = $projectRoot;
+
+        $adapter = new Local($this->projectRoot);
+        $this->filesystem = new Filesystem($adapter);
     }
 
     public function __invoke($request, $response, $args) {
-        $formData = $request->getParsedBody();
+        $formData = new PageFields($request->getParsedBody());
         $message = [];
 
-        if(empty($formData['url']) || empty($formData['title']) || empty($formData['body'])) {
+        if($formData->requiredFieldsNotEmpty() === FALSE) {
             $message['error'] = 'All fields are required.';
         } else {
-            $adapter = new Local($this->projectRoot);
-            $filesystem = new Filesystem($adapter);
-            $newPath = '/site/'.$formData['url'].'/html.twig';
+            $urlPath = '/site/'.$formData->getUrl().'/';
+            $twigPath = $urlPath.'html.twig';
 
-            if($filesystem->has($newPath)) {
+            if($this->fileExists($twigPath)) {
                 $message['error'] = 'The url exists, please pick another.';
             } else {
                 $message['created'] = 'yes';
 
-                $templateContent = $filesystem->read('/templates/blueprints/create-page.html.twig');
-                $templateContent = str_replace(['§title§', '§body§'], [$formData['title'], $formData['body']], $templateContent);
+                $templateContent = $this->filesystem->read('/templates/blueprints/create-page.html.twig');
+                $templateContent = str_replace(['§title§', '§body§'], [$formData->getTitle(), $formData->getBody()], $templateContent);
 
-                $filesystem->write($newPath, $templateContent);
+                $this->filesystem->write($twigPath, $templateContent);
+
+                if(strlen($formData->get('data')) > 0) {
+                    $this->filesystem->write($urlPath.'data.yaml', $formData->get('data'));
+                }
+
+                if(strlen($formData->get('yaml_name')) > 0 && strlen($formData->get('yaml_data')) > 0) {
+                    $this->filesystem->write($urlPath.$formData->get('yaml_name').'.yaml', $formData->get('yaml_data'));
+                }
             }
         }
 
@@ -48,5 +61,9 @@ final class CreatePage
         }
 
         return $response->withStatus(302)->withHeader('Location', $redirectUrl);
+    }
+
+    public function fileExists($path) {
+        return $this->filesystem->has($path);
     }
 }

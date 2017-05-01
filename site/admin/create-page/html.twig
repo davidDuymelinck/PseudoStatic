@@ -1,6 +1,15 @@
 {% extends '@layout/base.html.twig' %}
 {% block title %}Create page{% endblock %}
+{% block topJs%}
+    <script src="/js/lib/require.js"  data-main="/js/admin/create-page"></script>
+{% endblock %}
+{% block css %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.3.1/css/foundation.min.css">
+{% endblock %}
 {% block body %}
+    <div class="row">
+        <h1>Create page</h1>
+    </div>
     {% if created is defined %}
         <p style="background: green">The page was created</p>
     {% endif %}
@@ -8,11 +17,40 @@
         <p style="background: red">{{ error }}</p>
     {% endif %}
     <form method="post" action="">
-        <p><label for="url">Url</label> <input type="text" name="url" id="url"></p>
-        <p><label for="title">Title</label> <input type="text" name="title" id="title"></p>
-        <p><label for="body">Body</label>
-            <textarea name="body" id="body" cols="30" rows="10"></textarea>
-        </p>
-        <button type="submit">Create page</button>
+        <div class="row">
+            <label for="url">Url
+                <input type="text" name="url" id="url">
+            </label>
+        </div>
+        <div class="row">
+            <label for="title">Title
+                <input type="text" name="title" id="title">
+            </label>
+        </div>
+        <div class="row">
+            <label for="body">Body
+                <textarea name="body" id="body" data-editor="twig" rows="30"></textarea>
+            </label>
+        </div>
+        <div class="row">
+            <label for="data">data.yaml content
+                <textarea name="data" id="data" data-editor="yaml" rows="30"></textarea>
+            </label>
+        </div>
+        <div class="row">
+        <fieldset class="fieldset">
+            <legend>Custom yaml</legend>
+            <p>Both fields are required if you want to create a custom yaml</p>
+            <label for="yaml_name">File name
+                <input type="text" name="yaml_name" id="yaml_name">
+            </label>
+            <label for="yaml_data">content
+                <textarea name="yaml_data" id="yaml_data" data-editor="yaml" rows="30"></textarea>
+            </label>
+        </fieldset>
+        </div>
+        <div class="row">
+            <button type="submit" class="button">Create page</button>
+        </div>
     </form>
 {% endblock %}
