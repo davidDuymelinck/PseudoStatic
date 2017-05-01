@@ -1,6 +1,6 @@
 # PseudoStatic
 
-# A file based CMS powered by php
+## A file based CMS powered by php
 
 ---
 
@@ -56,6 +56,6 @@ Show changed content on page by going to /admin/refesh-site.
 
 `php console.php build:site` generates a static site in distr directory
  
- ---
+---
  
  # More features coming
